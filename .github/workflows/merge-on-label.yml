@@ -4,7 +4,7 @@
 name: Merge on label
 on:
   pull_request:
-    types: [labeled, opened]
+    types: [labeled]
 jobs:
   merge:
     name: Merge
