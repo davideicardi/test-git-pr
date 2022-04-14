@@ -1,0 +1,19 @@
+name: Merge PRs with rebase
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  merge:
+    name: Merge
+    if: github.event.issue.pull_request != '' && contains(github.event.comment.body, '/clean-merge')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the latest code
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
+      - name: Automatic Rebase
+        uses: davideicardi/pr-clean-merge-bot@0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
