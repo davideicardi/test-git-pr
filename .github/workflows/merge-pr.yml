@@ -1,11 +1,11 @@
 name: Merge PRs with rebase
 on:
-  issue_comment:
+  pull_request_review_comment:
     types: [created]
 jobs:
   merge:
     name: Merge
-    if: github.event.issue.pull_request != '' && contains(github.event.comment.body, '/clean-merge')
+    if: contains(github.event.comment.body, '/clean-merge')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the latest code
@@ -25,10 +25,7 @@ jobs:
 
           echo "Collecting information about PR #$PR_NUMBER of $GITHUB_REPOSITORY..."
 
-          pr_resp=$(curl -X GET -s -H "${AUTH_HEADER}" -H "${API_HEADER}" \
-            "${URI}/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER")
-
-          BASE_BRANCH=$(jq -r ".pull_request.pull_request.base.ref" "$GITHUB_EVENT_PATH")
+          BASE_BRANCH=$(jq -r ".pull_request.base.ref" "$GITHUB_EVENT_PATH")
 
           if [[ -z "$BASE_BRANCH" ]]; then
             echo "Cannot get base branch information for PR #$PR_NUMBER!"
@@ -36,7 +33,7 @@ jobs:
           fi
           echo "Base branch for PR #$PR_NUMBER is $BASE_BRANCH"
 
-          HEAD_BRANCH=$(jq -r ".pull_request.pull_request.head.ref" "$GITHUB_EVENT_PATH")
+          HEAD_BRANCH=$(jq -r ".pull_request.head.ref" "$GITHUB_EVENT_PATH")
           if [[ -z "$HEAD_BRANCH" ]]; then
             echo "Cannot get head branch information for PR #$PR_NUMBER!"
             exit 1
