@@ -1,0 +1,29 @@
+name: Merge on approval
+on:
+  pull_request_review:
+    types: [submitted]
+jobs:
+  merge:
+    name: Merge if approved
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the latest code
+        uses: actions/checkout@v2
+      - name: Merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET_BRANCH=${{ github.event.pull_request.base.ref }}
+          SOURCE_BRANCH=${{ github.event.pull_request.head.ref }}
+          echo "Merge $SOURCE_BRANCH into $TARGET_BRANCH"
+
+          # make sure branches are up-to-date
+          git fetch origin $TARGET_BRANCH
+
+          # do the merge with rebase
+          git checkout $TARGET_BRANCH
+          git pull --rebase origin $SOURCE_BRANCH
+
+          # push back
+          git push --force-with-lease
