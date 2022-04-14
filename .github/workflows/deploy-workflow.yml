@@ -1,0 +1,22 @@
+name: Stage Deploy
+
+concurrency: deploy-lock
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'develop'
+      - 'staging'
+      - 'prod'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Deploy not for real
+      run: echo "Deploy something ..."
